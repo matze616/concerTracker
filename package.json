@@ -1,0 +1,55 @@
+{
+	"name": "concertracker",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"imports": {
+		"#lib": "./src/lib/index.js",
+		"#lib/*": "./src/lib/*"
+	},
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"start": "HOST=${HOST:-127.0.0.1} node --env-file-if-exists=.env build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo \"\"",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"test": "vitest run",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "tsx scripts/migrate.ts",
+		"db:seed": "tsx scripts/seed.ts",
+		"backup": "tsx scripts/backup.ts",
+		"export": "tsx scripts/export.ts",
+		"postinstall": "simple-git-hooks"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-node": "^6.0.2",
+		"@sveltejs/kit": "^3.0.0",
+		"@sveltejs/vite-plugin-svelte": "^7.2.0",
+		"@tailwindcss/vite": "^4.3.5",
+		"@types/better-sqlite3": "^9.6.0",
+		"@types/leaflet": "^1.9.22",
+		"@types/node": "^26.6.6",
+		"drizzle-kit": "^0.31.11",
+		"simple-git-hooks": "^2.14.0",
+		"svelte": "^5.57.2",
+		"svelte-check": "^4.6.0",
+		"tailwindcss": "^4.3.5",
+		"tsx": "^4.23.15",
+		"typescript": "^6.0.3",
+		"vite": "^8.3.0",
+		"vitest": "^5.1.0"
+	},
+	"dependencies": {
+		"better-sqlite3": "^13.1.1",
+		"chart.js": "^4.6.1",
+		"drizzle-orm": "^0.45.4",
+		"leaflet": "^1.9.4"
+	},
+	"simple-git-hooks": {
+		"pre-commit": "node scripts/check-no-data.mjs"
+	},
+	"engines": {
+		"node": ">=22"
+	}
+}

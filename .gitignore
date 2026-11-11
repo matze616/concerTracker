@@ -1,0 +1,33 @@
+node_modules
+
+# ---------------------------------------------------------------
+# Personal data – stays on this computer, never committed/pushed
+# ---------------------------------------------------------------
+data/
+backups/
+exports/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.csv
+.env
+.env.*
+!.env.example
+
+# Output
+.output
+/.svelte-kit
+/build
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
