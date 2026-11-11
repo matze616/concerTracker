@@ -23,7 +23,7 @@ export function emptyState(): ConcertFormState {
 		venueName: '',
 		venueAddress: '',
 		venueCity: '',
-		venueCountry: '',
+		venueCountry: 'Germany', // default for new venues; most concerts are in Germany
 		event: '',
 		bands: [],
 		people: [],
