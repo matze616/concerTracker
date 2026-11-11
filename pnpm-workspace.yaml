@@ -1,5 +1,5 @@
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true
+  simple-git-hooks: true
 engineStrict: true
-onlyBuiltDependencies:
-  - esbuild
-  - better-sqlite3
-  - simple-git-hooks
