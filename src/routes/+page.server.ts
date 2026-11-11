@@ -18,7 +18,6 @@ export const load: PageServerLoad = () => {
 		topCountries: stats.topCountries(d, 8),
 		topEvents: stats.topEvents(d, 5),
 		gaps: stats.longestGaps(d, 5),
-		topRated: stats.topRatedBands(d, 5),
 		busiestMonths: stats.busiestMonths(d, 3),
 		onThisDay: stats.onThisDay(d, todayIso()),
 		recent: listConcerts(d, { limit: 5 })

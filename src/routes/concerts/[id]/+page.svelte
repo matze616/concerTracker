@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatDate, money, stars } from '#lib/format.ts';
+	import { formatDate, money } from '#lib/format.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -64,10 +64,6 @@
 		<div>
 			<p class="muted">Ticket</p>
 			<p>{money(c.ticketPriceCents, c.currency)}</p>
-		</div>
-		<div>
-			<p class="muted">Rating</p>
-			<p class="text-amber-500">{c.rating ? stars(c.rating) : '–'}</p>
 		</div>
 		{#if data.venue.address}
 			<div>

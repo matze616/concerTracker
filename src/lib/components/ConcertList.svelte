@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatDate, money, stars } from '#lib/format.ts';
+	import { formatDate, money } from '#lib/format.ts';
 	import type { ConcertRow } from '#lib/server/repo.ts';
 
 	let {
@@ -29,9 +29,7 @@
 						{#if !hideVenue}<span>{c.venueName}{c.city ? `, ${c.city}` : ''}</span>{/if}
 						{#if c.eventName}<span class="muted">{c.eventName}</span>{/if}
 						{#if c.people.length}<span class="muted">with {c.people.map((p) => p.name).join(', ')}</span>{/if}
-						{#if c.ticketPriceCents != null}<span class="muted">{money(c.ticketPriceCents, c.currency)}</span>{/if}
-						{#if c.rating}<span class="text-amber-500" aria-label="{c.rating} of 5 stars">{stars(c.rating)}</span>{/if}
-					</div>
+						{#if c.ticketPriceCents != null}<span class="muted">{money(c.ticketPriceCents, c.currency)}</span>{/if}					</div>
 				</a>
 			</li>
 		{/each}

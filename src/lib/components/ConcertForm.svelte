@@ -273,7 +273,7 @@
 		</datalist>
 	</div>
 
-	<div class="grid gap-4 sm:grid-cols-[1fr_6rem_1fr]">
+	<div class="grid gap-4 sm:grid-cols-[1fr_6rem]">
 		<div>
 			<label class="label" for="price">Ticket price</label>
 			<input id="price" class="input" inputmode="decimal" bind:value={s.price} placeholder="e.g. 35,50" />
@@ -282,22 +282,6 @@
 		<div>
 			<label class="label" for="currency">Currency</label>
 			<input id="currency" class="input uppercase" maxlength="3" bind:value={s.currency} />
-		</div>
-		<div>
-			<span class="label">Rating</span>
-			<div class="flex items-center gap-1 py-1" role="radiogroup" aria-label="Rating">
-				{#each [1, 2, 3, 4, 5] as n (n)}
-					<button
-						type="button"
-						role="radio"
-						aria-checked={s.rating === n}
-						aria-label="{n} star{n > 1 ? 's' : ''}"
-						class="text-2xl leading-none {s.rating && n <= s.rating ? 'text-amber-500' : 'text-ink-3'}"
-						onclick={() => (s.rating = s.rating === n ? null : n)}>★</button
-					>
-				{/each}
-				{#if s.rating}<button type="button" class="ml-2 text-sm link" onclick={() => (s.rating = null)}>clear</button>{/if}
-			</div>
 		</div>
 	</div>
 

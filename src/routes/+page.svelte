@@ -143,15 +143,7 @@
 				<h2 class="h2">Festivals</h2>
 				<RankList items={data.topEvents.map((e) => ({ href: `/events/${e.id}`, label: e.name, sub: plural(e.years, 'year'), value: e.days, valueLabel: plural(e.days, 'day') }))} />
 			{/if}
-			<h2 class="h2 {data.topEvents.length ? 'mt-5' : ''}">Best rated bands</h2>
-			{#if data.topRated.length}
-				<ul class="space-y-1 text-sm">
-					{#each data.topRated as b (b.id)}
-						<li><a class="link" href="/bands/{b.id}">{b.name}</a> <span class="muted">· ⌀ {num(b.avgRating, 1)}★ from {b.rated} shows</span></li>
-					{/each}
-				</ul>
-			{:else}<p class="text-sm muted">Rate concerts to see this.</p>{/if}
-			{#if o.avgRating}<p class="mt-3 text-xs muted">Average rating: {num(o.avgRating, 2)}★ · ⌀ {o.avgBandsPerConcert == null ? "–" : num(o.avgBandsPerConcert)} bands per concert</p>{/if}
+			{#if o.avgBandsPerConcert != null}<p class="text-xs muted {data.topEvents.length ? 'mt-3' : ''}">⌀ {num(o.avgBandsPerConcert)} bands per concert</p>{/if}
 		</section>
 	</div>
 {/if}

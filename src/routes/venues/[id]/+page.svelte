@@ -3,7 +3,7 @@
 	import RankList from '#lib/components/RankList.svelte';
 	import Stat from '#lib/components/Stat.svelte';
 	import VenueMap from '#lib/components/VenueMap.svelte';
-	import { formatDate, money, num, venueLabel } from '#lib/format.ts';
+	import { formatDate, money, venueLabel } from '#lib/format.ts';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -81,7 +81,7 @@
 	<Stat label="Visits" value={s.visits} />
 	<Stat label="Different bands" value={s.bands} />
 	<Stat label="First / last visit" value={formatDate(s.firstDate, 'short')} sub={formatDate(s.lastDate, 'short')} />
-	<Stat label="Spent here" value={money(s.spentCents)} sub={s.avgRating ? `⌀ rating ${num(s.avgRating, 1)}★` : undefined} />
+	<Stat label="Spent here" value={money(s.spentCents)} />
 </div>
 
 <div class="grid gap-4 md:grid-cols-[2fr_1fr]">
