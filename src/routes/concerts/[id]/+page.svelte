@@ -25,6 +25,7 @@
 	<div class="flex flex-wrap gap-2">
 		<a class="btn" href="/concerts/{c.id}/edit">Edit</a>
 		<a class="btn" href="/concerts/new?from={c.id}" title="Same venue, event and people, the following day">+ Next day</a>
+		<a class="btn" href="/concerts/new?again={c.id}" title="Same date, bands and people at another venue">+ Same day</a>
 		<form
 			method="POST"
 			action="?/delete"

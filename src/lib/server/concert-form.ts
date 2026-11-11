@@ -68,6 +68,14 @@ export function stateForNextDay(id: number): ConcertFormState | null {
 	};
 }
 
+/** Prefill for "same band, same day, another venue": same date, bands, people and currency; venue left empty. */
+export function stateForSameDay(id: number): ConcertFormState | null {
+	const c = getConcert(db(), id);
+	if (!c) return null;
+	const s = stateFromConcert(c);
+	return { ...emptyState(), date: s.date, bands: s.bands, people: s.people, currency: s.currency };
+}
+
 /** Shared form action for create and edit. */
 export async function handleConcertSave(request: Request, id?: number) {
 	const parsed = parseConcertForm(await request.formData());

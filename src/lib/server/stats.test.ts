@@ -156,3 +156,15 @@ describe('venue address from the concert form', () => {
 		expect(unchanged.newVenueId).toBeNull();
 	});
 });
+
+describe('same band twice on one day', () => {
+	it('keeps both concerts and counts the band twice', () => {
+		const day = '2018-06-16';
+		const a = saveConcert(db, { date: day, venue: halle, bands: [{ name: 'Nordlicht', headliner: true }], people: [] });
+		const b = saveConcert(db, { date: day, venue: club, bands: [{ name: 'Nordlicht', headliner: true }], people: [] });
+		expect(a.id).not.toBe(b.id);
+		expect(listConcerts(db, { year: '2018' })).toHaveLength(2);
+		const band = stats.topBands(db, 10).find((x) => x.name === 'Nordlicht')!;
+		expect(stats.bandStats(db, band.id).summary.times).toBe(4); // 2 from setup + 2 on the same day
+	});
+});
