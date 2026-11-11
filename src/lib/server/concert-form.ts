@@ -73,7 +73,14 @@ export async function handleConcertSave(request: Request, id?: number) {
 	const parsed = parseConcertForm(await request.formData());
 	if (!parsed.ok) return fail(400, { errors: parsed.errors, state: parsed.state });
 	const d = db();
-	const saved = saveConcert(d, parsed.input, id);
+	let saved;
+	try {
+		saved = saveConcert(d, parsed.input, id);
+	} catch (e) {
+		if (String(e).includes('UNIQUE'))
+			return fail(400, { errors: { venue: 'Another venue with this name already exists in that city.' }, state: parsed.state });
+		throw e;
+	}
 	let message = '';
 	if (saved.newVenueId) message = await geocodeVenue(d, saved.newVenueId);
 	redirect(303, `/concerts/${saved.id}${message ? `?notice=${encodeURIComponent(message)}` : ''}`);

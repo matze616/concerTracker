@@ -131,3 +131,28 @@ describe('editing', () => {
 		expect(listConcerts(db, { q: 'copper' })).toHaveLength(1);
 	});
 });
+
+describe('venue address from the concert form', () => {
+	it('updates an existing venue only when asked, and reports it for geocoding', () => {
+		const c = getConcert(db, listConcerts(db, { q: 'copper' })[0].id)!;
+		const base = { date: c.date, bands: [{ name: 'Copper Wolves', headliner: true }], people: [] };
+
+		const plain = saveConcert(db, { ...base, venue: { id: c.venueId, name: 'Kellerclub', address: 'Ignored 1' } }, c.id);
+		expect(plain.newVenueId).toBeNull();
+		expect(getConcert(db, c.id)!.city).toBe('Berlin');
+
+		const edited = saveConcert(
+			db,
+			{ ...base, venue: { id: c.venueId, name: 'Kellerclub', address: 'Lindenweg 3', city: 'Berlin', country: 'Germany', updateAddress: true } },
+			c.id
+		);
+		expect(edited.newVenueId).toBe(c.venueId);
+
+		const unchanged = saveConcert(
+			db,
+			{ ...base, venue: { id: c.venueId, name: 'Kellerclub', address: 'Lindenweg 3', city: 'Berlin', country: 'Germany', updateAddress: true } },
+			c.id
+		);
+		expect(unchanged.newVenueId).toBeNull();
+	});
+});

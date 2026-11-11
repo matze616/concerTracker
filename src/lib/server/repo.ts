@@ -12,6 +12,8 @@ export interface VenueInput {
 	address?: string | null;
 	city?: string | null;
 	country?: string | null;
+	/** With an existing `id`: overwrite that venue's address, city and country with the values above. */
+	updateAddress?: boolean;
 }
 
 export interface ConcertInput {
@@ -105,11 +107,17 @@ export function findOrCreateEvent(db: DB, name: string): number {
 	return db.insert(t.events).values({ name: n }).returning({ id: t.events.id }).get().id;
 }
 
-/** Returns the venue id and whether it was newly created (so it can be geocoded). */
+/** Returns the venue id and whether it was created or its address changed (so it should be geocoded). */
 export function findOrCreateVenue(db: DB, v: VenueInput): { id: number; created: boolean } {
 	if (v.id) {
-		const exists = db.select({ id: t.venues.id }).from(t.venues).where(eq(t.venues.id, v.id)).get();
-		if (exists) return { id: exists.id, created: false };
+		const exists = db.select().from(t.venues).where(eq(t.venues.id, v.id)).get();
+		if (exists) {
+			if (!v.updateAddress) return { id: exists.id, created: false };
+			const next = { address: clean(v.address), city: clean(v.city), country: clean(v.country) };
+			const changed = next.address !== exists.address || next.city !== exists.city || next.country !== exists.country;
+			if (changed) db.update(t.venues).set(next).where(eq(t.venues.id, exists.id)).run();
+			return { id: exists.id, created: changed };
+		}
 	}
 	const name = clean(v.name)!;
 	const city = clean(v.city);
@@ -136,7 +144,7 @@ export function findOrCreateVenue(db: DB, v: VenueInput): { id: number; created:
 // Concerts
 // ---------------------------------------------------------------------------
 
-/** Creates (id undefined) or updates a concert. Returns id and the id of a newly created venue, if any. */
+/** Creates (id undefined) or updates a concert. Returns id and the id of a new or re-addressed venue to geocode, if any. */
 export function saveConcert(
 	db: DB,
 	input: ConcertInput,

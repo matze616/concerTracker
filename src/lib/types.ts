@@ -6,6 +6,8 @@ export interface ConcertFormState {
 	venueAddress: string;
 	venueCity: string;
 	venueCountry: string;
+	/** True when the user edits the address of the chosen existing venue. */
+	venueEdit?: boolean;
 	event: string;
 	bands: { name: string; headliner: boolean }[];
 	people: string[];

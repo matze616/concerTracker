@@ -50,7 +50,8 @@ export function parseConcertForm(
 				name: state.venueName,
 				address: state.venueAddress,
 				city: state.venueCity,
-				country: state.venueCountry
+				country: state.venueCountry,
+				updateAddress: !!state.venueEdit
 			},
 			event: state.event,
 			bands,

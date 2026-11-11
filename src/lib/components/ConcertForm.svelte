@@ -38,6 +38,8 @@
 			})()
 	);
 	$effect(() => {
+		// a different venue was chosen → leave address-edit mode
+		if ((matchedVenue?.id ?? null) !== s.venueId) s.venueEdit = false;
 		if (matchedVenue) {
 			s.venueId = matchedVenue.id;
 			s.venueName = matchedVenue.name;
@@ -147,17 +149,36 @@
 				{#each options.venues as v (v.id)}<option value={venueLabel(v)}></option>{/each}
 			</datalist>
 			{#if errors.venue}<p class="mt-1 text-sm text-danger">{errors.venue}</p>{/if}
-			{#if matchedVenue}
+			{#if matchedVenue && !s.venueEdit}
 				<p class="mt-1 text-sm muted">
 					{[matchedVenue.address, matchedVenue.city, matchedVenue.country].filter(Boolean).join(', ') || 'Existing venue'}
+					·
+					<button
+						type="button"
+						class="link"
+						onclick={() => {
+							s.venueAddress = matchedVenue.address ?? '';
+							s.venueCity = matchedVenue.city ?? '';
+							s.venueCountry = matchedVenue.country ?? '';
+							s.venueEdit = true;
+						}}>Edit address</button
+					>
 				</p>
 			{/if}
 		</div>
 	</div>
 
-	{#if !matchedVenue && venueText.trim()}
+	{#if (!matchedVenue && venueText.trim()) || (matchedVenue && s.venueEdit)}
 		<fieldset class="card space-y-3 border-dashed">
-			<legend class="px-1 text-sm font-medium">New venue: {s.venueName}</legend>
+			<legend class="px-1 text-sm font-medium">
+				{#if matchedVenue}
+					Address of {matchedVenue.name}
+					<span class="font-normal muted">(applies to all concerts there) ·</span>
+					<button type="button" class="link font-normal" onclick={() => (s.venueEdit = false)}>Cancel</button>
+				{:else}
+					New venue: {s.venueName}
+				{/if}
+			</legend>
 			<div>
 				<label class="label" for="addr">Address</label>
 				<input id="addr" class="input" bind:value={s.venueAddress} placeholder="Street and number (optional)" />
