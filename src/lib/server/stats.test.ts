@@ -168,3 +168,13 @@ describe('same band twice on one day', () => {
 		expect(stats.bandStats(db, band.id).summary.times).toBe(4); // 2 from setup + 2 on the same day
 	});
 });
+
+describe('events', () => {
+	it('counts festival days by date, not by concert', () => {
+		for (const venue of [halle, club, { name: 'Café', city: 'Hamburg' }])
+			saveConcert(db, { date: '2014-10-18', venue, event: 'Hirschkurs', bands: [{ name: 'Heisskalt', headliner: true }], people: [] });
+		const ev = stats.topEvents(db).find((e) => e.name === 'Hirschkurs')!;
+		expect(ev.days).toBe(1);
+		expect(stats.eventStats(db, ev.id).days).toBe(1);
+	});
+});
