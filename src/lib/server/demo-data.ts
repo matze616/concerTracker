@@ -45,6 +45,7 @@ export function demoConcerts(count = 80): ConcertInput[] {
 			date,
 			venue,
 			event: isFestival ? 'Nordfeld Open Air' : null,
+			eventIsFestival: isFestival || undefined,
 			bands: [...lineup].map((name, idx) => ({ name, headliner: idx === lineup.size - 1 })),
 			people: [...people],
 			ticketPriceCents: r() < 0.8 ? 1500 + Math.floor(r() * 60) * 100 : null,

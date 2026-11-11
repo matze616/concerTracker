@@ -49,6 +49,17 @@
 		}
 	});
 
+	// ----- Event -----------------------------------------------------------
+	const matchedEvent = $derived(options.events.find((e) => e.name.toLowerCase() === s.event.trim().toLowerCase()));
+	// when a different existing event is picked, show its stored festival flag
+	// svelte-ignore state_referenced_locally
+	let lastEvent = matchedEvent?.name;
+	$effect(() => {
+		const m = matchedEvent;
+		if (m && m.name !== lastEvent) s.eventFestival = m.isFestival;
+		lastEvent = m?.name;
+	});
+
 	// ----- Bands -----------------------------------------------------------
 	let bandInputs: HTMLInputElement[] = $state([]);
 	if (s.bands.length === 0) s.bands.push({ name: '', headliner: false });
@@ -201,11 +212,18 @@
 	{/if}
 
 	<div>
-		<label class="label" for="event">Festival / event <span class="font-normal muted">(optional)</span></label>
-		<input id="event" class="input" list="event-list" autocomplete="off" bind:value={s.event} placeholder="e.g. a festival or tour name" />
+		<label class="label" for="event">Tour / festival <span class="font-normal muted">(optional)</span></label>
+		<input id="event" class="input" list="event-list" autocomplete="off" bind:value={s.event} placeholder="e.g. a tour or festival name" />
 		<datalist id="event-list">
-			{#each options.events as e (e)}<option value={e}></option>{/each}
+			{#each options.events as e (e.name)}<option value={e.name}></option>{/each}
 		</datalist>
+		{#if s.event.trim()}
+			<label class="mt-2 flex items-center gap-2 text-sm">
+				<input type="checkbox" bind:checked={s.eventFestival} />
+				This is a festival
+				{#if matchedEvent}<span class="muted">(applies to all concerts of “{matchedEvent.name}”)</span>{/if}
+			</label>
+		{/if}
 	</div>
 
 	<fieldset>

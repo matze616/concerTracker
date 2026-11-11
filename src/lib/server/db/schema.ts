@@ -30,6 +30,8 @@ export const events = sqliteTable(
 	{
 		id: integer('id').primaryKey({ autoIncrement: true }),
 		name: text('name').notNull(),
+		/** Festival (counts days, shown under Festivals) vs. tour or other event */
+		isFestival: integer('is_festival', { mode: 'boolean' }).notNull().default(false),
 		notes: text('notes')
 	},
 	(t) => [uniqueIndex('events_name_uq').on(sql`lower(${t.name})`)]

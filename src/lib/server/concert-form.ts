@@ -3,7 +3,7 @@ import type { ConcertFormState, FormOptions } from '../types';
 import { db } from './db';
 import { parseConcertForm } from './forms';
 import { geocodeVenue } from './geocode';
-import { allBandNames, allEventNames, allPeopleNames, allVenues, getConcert, saveConcert, type ConcertRow } from './repo';
+import { allBandNames, allEventOptions, allPeopleNames, allVenues, getConcert, saveConcert, type ConcertRow } from './repo';
 import { todayIso } from '../format';
 
 export function formOptions(): FormOptions {
@@ -12,7 +12,7 @@ export function formOptions(): FormOptions {
 		venues: allVenues(d).map(({ id, name, address, city, country }) => ({ id, name, address, city, country })),
 		bands: allBandNames(d),
 		people: allPeopleNames(d),
-		events: allEventNames(d)
+		events: allEventOptions(d)
 	};
 }
 
@@ -25,6 +25,7 @@ export function emptyState(): ConcertFormState {
 		venueCity: '',
 		venueCountry: 'Germany', // default for new venues; most concerts are in Germany
 		event: '',
+		eventFestival: false,
 		bands: [],
 		people: [],
 		price: '',
@@ -43,6 +44,7 @@ export function stateFromConcert(c: ConcertRow): ConcertFormState {
 		venueCity: c.city ?? '',
 		venueCountry: c.country ?? '',
 		event: c.eventName ?? '',
+		eventFestival: c.eventIsFestival,
 		// the form lists bands like a festival poster: top of the bill first (reverse running order)
 		bands: c.bands.map((b) => ({ name: b.name, headliner: b.isHeadliner })).reverse(),
 		people: c.people.map((p) => p.name),

@@ -9,6 +9,8 @@ export interface ConcertFormState {
 	/** True when the user edits the address of the chosen existing venue. */
 	venueEdit?: boolean;
 	event: string;
+	/** Event is a festival (checkbox in the form) */
+	eventFestival?: boolean;
 	bands: { name: string; headliner: boolean }[];
 	people: string[];
 	price: string;
@@ -31,5 +33,5 @@ export interface FormOptions {
 	venues: VenueOption[];
 	bands: string[];
 	people: string[];
-	events: string[];
+	events: { name: string; isFestival: boolean }[];
 }

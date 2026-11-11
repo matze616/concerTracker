@@ -20,6 +20,8 @@ export interface ConcertInput {
 	date: string;
 	venue: VenueInput;
 	event?: string | null;
+	/** Marks the event as festival (true) or tour/other (false); undefined leaves it unchanged. */
+	eventIsFestival?: boolean;
 	/** In running order; first = opener */
 	bands: { name: string; headliner: boolean }[];
 	people: string[];
@@ -45,6 +47,7 @@ export interface ConcertRow {
 	country: string | null;
 	eventId: number | null;
 	eventName: string | null;
+	eventIsFestival: boolean;
 	ticketPriceCents: number | null;
 	currency: string;
 	rating: number | null;
@@ -96,15 +99,28 @@ export function findOrCreatePerson(db: DB, name: string): number {
 	return db.insert(t.people).values({ name: n }).returning({ id: t.people.id }).get().id;
 }
 
-export function findOrCreateEvent(db: DB, name: string): number {
+/** `isFestival` given → also stored on an existing event (the flag belongs to the event, not the concert). */
+export function findOrCreateEvent(db: DB, name: string, isFestival?: boolean): number {
 	const n = clean(name)!;
 	const found = db
-		.select({ id: t.events.id })
+		.select({ id: t.events.id, isFestival: t.events.isFestival })
 		.from(t.events)
 		.where(sql`lower(${t.events.name}) = lower(${n})`)
 		.get();
-	if (found) return found.id;
-	return db.insert(t.events).values({ name: n }).returning({ id: t.events.id }).get().id;
+	if (found) {
+		if (isFestival != null && isFestival !== found.isFestival)
+			db.update(t.events).set({ isFestival }).where(eq(t.events.id, found.id)).run();
+		return found.id;
+	}
+	return db
+		.insert(t.events)
+		.values({ name: n, isFestival: !!isFestival })
+		.returning({ id: t.events.id })
+		.get().id;
+}
+
+export function setEventFestival(db: DB, id: number, isFestival: boolean) {
+	db.update(t.events).set({ isFestival }).where(eq(t.events.id, id)).run();
 }
 
 /** Returns the venue id and whether it was created or its address changed (so it should be geocoded). */
@@ -154,7 +170,7 @@ export function saveConcert(
 		const txdb = tx as unknown as DB;
 		const venue = findOrCreateVenue(txdb, input.venue);
 		const eventName = clean(input.event);
-		const eventId = eventName ? findOrCreateEvent(txdb, eventName) : null;
+		const eventId = eventName ? findOrCreateEvent(txdb, eventName, input.eventIsFestival) : null;
 		const values = {
 			date: input.date,
 			venueId: venue.id,
@@ -258,7 +274,7 @@ export function listConcerts(db: DB, f: ConcertFilter = {}): ConcertRow[] {
 	}
 	const sqlText = `
 		SELECT c.id, c.date, c.venue_id AS venueId, v.name AS venueName, v.city, v.country,
-		       c.event_id AS eventId, e.name AS eventName, c.ticket_price_cents AS ticketPriceCents,
+		       c.event_id AS eventId, e.name AS eventName, coalesce(e.is_festival, 0) AS eventIsFestival, c.ticket_price_cents AS ticketPriceCents,
 		       c.currency, c.rating, c.notes
 		FROM concerts c
 		JOIN venues v ON v.id = c.venue_id
@@ -274,7 +290,7 @@ export function getConcert(db: DB, id: number): ConcertRow | undefined {
 	const row = db.$client
 		.prepare(
 			`SELECT c.id, c.date, c.venue_id AS venueId, v.name AS venueName, v.city, v.country,
-			        c.event_id AS eventId, e.name AS eventName, c.ticket_price_cents AS ticketPriceCents,
+			        c.event_id AS eventId, e.name AS eventName, coalesce(e.is_festival, 0) AS eventIsFestival, c.ticket_price_cents AS ticketPriceCents,
 			        c.currency, c.rating, c.notes
 			 FROM concerts c JOIN venues v ON v.id = c.venue_id LEFT JOIN events e ON e.id = c.event_id
 			 WHERE c.id = ?`
@@ -304,7 +320,7 @@ function attachLineups(db: DB, rows: Omit<ConcertRow, 'bands' | 'people'>[]): Co
 
 	const byId = new Map<number, ConcertRow>();
 	const result = rows.map((r) => {
-		const full: ConcertRow = { ...r, bands: [], people: [] };
+		const full: ConcertRow = { ...r, eventIsFestival: !!r.eventIsFestival, bands: [], people: [] };
 		byId.set(r.id, full);
 		return full;
 	});
@@ -344,11 +360,13 @@ export function allPeopleNames(db: DB): string[] {
 		.all() as string[];
 }
 
-export function allEventNames(db: DB): string[] {
-	return db.$client
-		.prepare(`SELECT name FROM events ORDER BY name COLLATE NOCASE`)
-		.pluck()
-		.all() as string[];
+export function allEventOptions(db: DB): { name: string; isFestival: boolean }[] {
+	return (
+		db.$client.prepare(`SELECT name, is_festival AS isFestival FROM events ORDER BY name COLLATE NOCASE`).all() as {
+			name: string;
+			isFestival: number;
+		}[]
+	).map((e) => ({ name: e.name, isFestival: !!e.isFestival }));
 }
 
 export function allVenues(db: DB) {

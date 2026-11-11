@@ -55,6 +55,7 @@ export function parseConcertForm(
 				updateAddress: !!state.venueEdit
 			},
 			event: state.event,
+			eventIsFestival: state.event?.trim() ? !!state.eventFestival : undefined,
 			bands,
 			people: (state.people ?? []).map((p) => String(p).trim()).filter(Boolean),
 			ticketPriceCents: price as number | null,

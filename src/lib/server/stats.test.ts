@@ -172,9 +172,24 @@ describe('same band twice on one day', () => {
 describe('events', () => {
 	it('counts festival days by date, not by concert', () => {
 		for (const venue of [halle, club, { name: 'Café', city: 'Hamburg' }])
-			saveConcert(db, { date: '2014-10-18', venue, event: 'Hirschkurs', bands: [{ name: 'Heisskalt', headliner: true }], people: [] });
+			saveConcert(db, { date: '2014-10-18', venue, event: 'Hirschkurs', eventIsFestival: true, bands: [{ name: 'Heisskalt', headliner: true }], people: [] });
 		const ev = stats.topEvents(db).find((e) => e.name === 'Hirschkurs')!;
 		expect(ev.days).toBe(1);
 		expect(stats.eventStats(db, ev.id).days).toBe(1);
+	});
+});
+
+describe('festival flag', () => {
+	it('separates festivals from tours and keeps the flag unless it is set explicitly', () => {
+		// 'Winter Fest' from the setup was saved without a flag → tour/event
+		expect(stats.topEvents(db, 10, true)).toHaveLength(0);
+		expect(stats.topEvents(db, 10, false).map((e) => e.name)).toEqual(['Winter Fest']);
+
+		saveConcert(db, { date: '2016-07-01', venue: halle, event: 'winter fest', eventIsFestival: true, bands: [{ name: 'X', headliner: true }], people: [] });
+		expect(stats.topEvents(db, 10, true).map((e) => e.name)).toEqual(['Winter Fest']);
+
+		saveConcert(db, { date: '2016-07-02', venue: halle, event: 'Winter Fest', bands: [{ name: 'Y', headliner: true }], people: [] });
+		const row = listConcerts(db, { q: 'Y' }).find((c) => c.date === '2016-07-02')!;
+		expect(row.eventIsFestival).toBe(true);
 	});
 });

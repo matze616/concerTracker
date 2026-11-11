@@ -1,0 +1,1 @@
+ALTER TABLE `events` ADD `is_festival` integer DEFAULT false NOT NULL;

@@ -208,13 +208,15 @@ export function topCountries(db: DB, limit = 10) {
 	);
 }
 
-export function topEvents(db: DB, limit = 10) {
-	return all<{ id: number; name: string; days: number; years: number; bands: number }>(
+/** Events ranked by days attended. `festival`: true = only festivals, false = only tours/other, undefined = all. */
+export function topEvents(db: DB, limit = 10, festival?: boolean) {
+	return all<{ id: number; name: string; isFestival: number; days: number; concerts: number; years: number; bands: number }>(
 		db,
-		`SELECT e.id, e.name, count(DISTINCT c.date) AS days, count(DISTINCT substr(c.date,1,4)) AS years,
+		`SELECT e.id, e.name, e.is_festival AS isFestival, count(DISTINCT c.date) AS days, count(c.id) AS concerts, count(DISTINCT substr(c.date,1,4)) AS years,
 		        (SELECT count(DISTINCT cb.band_id) FROM concert_bands cb JOIN concerts c2 ON c2.id = cb.concert_id WHERE c2.event_id = e.id) AS bands
 		 FROM events e JOIN concerts c ON c.event_id = e.id
-		 GROUP BY e.id ORDER BY days DESC LIMIT ?`,
+		 ${festival == null ? "" : `WHERE e.is_festival = ${festival ? 1 : 0}`}
+		 GROUP BY e.id ORDER BY days DESC, concerts DESC LIMIT ?`,
 		limit
 	);
 }
@@ -372,9 +374,9 @@ export function personStats(db: DB, personId: number) {
 }
 
 export function eventStats(db: DB, eventId: number) {
-	return get<{ days: number; editions: number; firstDate: string | null; lastDate: string | null; bands: number; spentCents: number }>(
+	return get<{ days: number; concerts: number; editions: number; firstDate: string | null; lastDate: string | null; bands: number; spentCents: number }>(
 		db,
-		`SELECT count(DISTINCT date) AS days, count(DISTINCT substr(date,1,4)) AS editions, min(date) AS firstDate, max(date) AS lastDate,
+		`SELECT count(DISTINCT date) AS days, count(*) AS concerts, count(DISTINCT substr(date,1,4)) AS editions, min(date) AS firstDate, max(date) AS lastDate,
 		        coalesce(sum(ticket_price_cents), 0) AS spentCents,
 		        (SELECT count(DISTINCT cb.band_id) FROM concert_bands cb JOIN concerts c2 ON c2.id = cb.concert_id WHERE c2.event_id = ?) AS bands
 		 FROM concerts WHERE event_id = ?`,

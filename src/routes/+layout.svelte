@@ -12,7 +12,7 @@
 		{ href: '/bands', label: 'Bands' },
 		{ href: '/venues', label: 'Venues' },
 		{ href: '/people', label: 'People' },
-		{ href: '/events', label: 'Festivals' },
+		{ href: '/events', label: 'Tours & festivals' },
 		{ href: '/export', label: 'Export' }
 	];
 	const active = (href: string) => (href === '/' ? page.url.pathname === '/' : page.url.pathname.startsWith(href));

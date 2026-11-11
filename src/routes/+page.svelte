@@ -139,11 +139,15 @@
 			{/if}
 		</section>
 		<section class="card">
-			{#if data.topEvents.length}
+			{#if data.topFestivals.length}
 				<h2 class="h2">Festivals</h2>
-				<RankList items={data.topEvents.map((e) => ({ href: `/events/${e.id}`, label: e.name, sub: plural(e.years, 'year'), value: e.days, valueLabel: plural(e.days, 'day') }))} />
+				<RankList items={data.topFestivals.map((e) => ({ href: `/events/${e.id}`, label: e.name, sub: plural(e.years, 'year'), value: e.days, valueLabel: plural(e.days, 'day') }))} />
 			{/if}
-			{#if o.avgBandsPerConcert != null}<p class="text-xs muted {data.topEvents.length ? 'mt-3' : ''}">⌀ {num(o.avgBandsPerConcert)} bands per concert</p>{/if}
+			{#if data.topTours.length}
+				<h2 class="h2 {data.topFestivals.length ? 'mt-5' : ''}">Tours</h2>
+				<RankList items={data.topTours.map((e) => ({ href: `/events/${e.id}`, label: e.name, sub: plural(e.bands, 'band'), value: e.concerts, valueLabel: plural(e.concerts, 'concert') }))} />
+			{/if}
+			{#if o.avgBandsPerConcert != null}<p class="text-xs muted {data.topFestivals.length || data.topTours.length ? 'mt-3' : ''}">⌀ {num(o.avgBandsPerConcert)} bands per concert</p>{/if}
 		</section>
 	</div>
 {/if}
