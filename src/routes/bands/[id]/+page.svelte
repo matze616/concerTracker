@@ -3,7 +3,7 @@
 	import RankList from '#lib/components/RankList.svelte';
 	import RenameForm from '#lib/components/RenameForm.svelte';
 	import Stat from '#lib/components/Stat.svelte';
-	import { formatDate } from '#lib/format.ts';
+	import { formatDate, num } from '#lib/format.ts';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -21,7 +21,7 @@
 	<Stat label="Times seen" value={s.times} sub="{s.headlined}× as headliner" />
 	<Stat label="First time" value={formatDate(s.firstDate, 'short')} />
 	<Stat label="Last time" value={formatDate(s.lastDate, 'short')} />
-	<Stat label="Venues" value={s.venues} sub={s.avgRating ? `⌀ rating ${s.avgRating.toFixed(1)}★` : undefined} />
+	<Stat label="Venues" value={s.venues} sub={s.avgRating ? `⌀ rating ${num(s.avgRating, 1)}★` : undefined} />
 </div>
 
 <div class="grid gap-4 md:grid-cols-[2fr_1fr]">

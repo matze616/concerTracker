@@ -2,12 +2,13 @@
 	// Single-series column chart (Chart.js). Theme-aware, hover tooltip, table view for accessibility.
 	import { onMount } from 'svelte';
 	import type { Chart as ChartType } from 'chart.js';
+	import { num } from '#lib/format.ts';
 
 	let {
 		labels,
 		values,
 		label,
-		format = (v: number) => v.toLocaleString('en-GB'),
+		format = (v: number) => num(v),
 		height = 220,
 		onselect
 	}: {

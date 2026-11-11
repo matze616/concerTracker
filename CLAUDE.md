@@ -39,7 +39,7 @@ CachyOS PC (browser at http://localhost:5173). The owner already codes; explain 
 - Schema change: edit `schema.ts` → `pnpm db:generate` → **review the SQL** (drizzle-kit mangled the multi-column
   expression index `venues_name_city_uq` once; it was fixed by hand in `0000_init.sql`).
 - Prices are stored as integer cents (`ticket_price_cents`), dates as ISO `YYYY-MM-DD` text.
-- UI text in English, dates/money formatted with the fixed `en-GB` locale (`src/lib/format.ts`) to avoid hydration mismatches.
+- UI text in English, dates/money formatted with the fixed `de-DE` locale (`src/lib/format.ts`) to avoid hydration mismatches.
 - Colors are CSS tokens in `src/app.css` with light + dark values; charts use a single series color (`--series-1`).
 - Before committing: `pnpm check` and `pnpm test` must pass.
 

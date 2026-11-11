@@ -4,7 +4,7 @@
 	import ConcertList from '#lib/components/ConcertList.svelte';
 	import RankList from '#lib/components/RankList.svelte';
 	import Stat from '#lib/components/Stat.svelte';
-	import { MONTHS, WEEKDAYS, formatDate, money, plural, yearsBetween } from '#lib/format.ts';
+	import { MONTHS, WEEKDAYS, formatDate, money, num, plural, yearsBetween } from '#lib/format.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -123,7 +123,7 @@
 					{#each data.gaps as g (g.id + g.toDate)}
 						<li>
 							<a class="link" href="/bands/{g.id}">{g.name}</a>
-							<span class="muted">· {(g.days / 365.25).toFixed(1)} years ({g.fromDate.slice(0, 4)} → {g.toDate.slice(0, 4)})</span>
+							<span class="muted">· {num(g.days / 365.25, 1)} years ({g.fromDate.slice(0, 4)} → {g.toDate.slice(0, 4)})</span>
 						</li>
 					{/each}
 				</ul>
@@ -147,11 +147,11 @@
 			{#if data.topRated.length}
 				<ul class="space-y-1 text-sm">
 					{#each data.topRated as b (b.id)}
-						<li><a class="link" href="/bands/{b.id}">{b.name}</a> <span class="muted">· ⌀ {b.avgRating.toFixed(1)}★ from {b.rated} shows</span></li>
+						<li><a class="link" href="/bands/{b.id}">{b.name}</a> <span class="muted">· ⌀ {num(b.avgRating, 1)}★ from {b.rated} shows</span></li>
 					{/each}
 				</ul>
 			{:else}<p class="text-sm muted">Rate concerts to see this.</p>{/if}
-			{#if o.avgRating}<p class="mt-3 text-xs muted">Average rating: {o.avgRating.toFixed(2)}★ · ⌀ {o.avgBandsPerConcert} bands per concert</p>{/if}
+			{#if o.avgRating}<p class="mt-3 text-xs muted">Average rating: {num(o.avgRating, 2)}★ · ⌀ {o.avgBandsPerConcert == null ? "–" : num(o.avgBandsPerConcert)} bands per concert</p>{/if}
 		</section>
 	</div>
 {/if}

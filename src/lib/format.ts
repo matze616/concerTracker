@@ -1,16 +1,18 @@
 // Formatting helpers usable on both server and client (fixed locale avoids hydration mismatches).
-const LOCALE = 'en-GB';
+export const LOCALE = 'de-DE';
+
+/** Number with German separators (1.234,5). `digits` fixes the number of decimals. */
+export function num(n: number, digits?: number): string {
+	return n.toLocaleString(LOCALE, digits == null ? undefined : { minimumFractionDigits: digits, maximumFractionDigits: digits });
+}
 
 export function formatDate(iso: string | null | undefined, style: 'long' | 'short' = 'long'): string {
 	if (!iso) return '–';
-	const d = new Date(iso + 'T12:00:00Z');
-	return d.toLocaleDateString(LOCALE, {
-		timeZone: 'UTC',
-		weekday: style === 'long' ? 'short' : undefined,
-		day: 'numeric',
-		month: 'short',
-		year: 'numeric'
-	});
+	const [y, m, d] = iso.split('-');
+	const date = `${d}.${m}.${y}`; // German format DD.MM.YYYY
+	if (style === 'short') return date;
+	const weekday = WEEKDAYS[(new Date(iso + 'T12:00:00Z').getUTCDay() + 6) % 7];
+	return `${weekday} ${date}`;
 }
 
 export function money(cents: number | null | undefined, currency = 'EUR'): string {
@@ -19,7 +21,7 @@ export function money(cents: number | null | undefined, currency = 'EUR'): strin
 }
 
 export function plural(n: number, one: string, many = one + 's'): string {
-	return `${n.toLocaleString(LOCALE)} ${n === 1 ? one : many}`;
+	return `${num(n)} ${n === 1 ? one : many}`;
 }
 
 export function yearsBetween(from: string | null, to: string | null): string {
