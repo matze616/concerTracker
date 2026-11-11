@@ -20,14 +20,10 @@ sudo pacman -Syu
 ```
 
 ```bash
-sudo pacman -S --needed base-devel git nodejs npm sqlite github-cli openssh
+sudo pacman -S --needed base-devel git nodejs npm pnpm sqlite github-cli openssh
 ```
 
-```bash
-sudo corepack enable
-```
-
-`corepack` provides `pnpm`, the package manager this project uses. `base-devel` is needed in case the SQLite driver
+`pnpm` is the package manager this project uses. `base-devel` is needed in case the SQLite driver
 has to be compiled. Check the versions (Node must be 22 or newer):
 
 ```bash
@@ -173,8 +169,10 @@ Build once, then run it as a user service:
 pnpm build
 ```
 
-```bash
-mkdir -p ~/.config/systemd/user && cat > ~/.config/systemd/user/concertracker.service <<EOF
+Create the file `~/.config/systemd/user/concertracker.service` (for example `mkdir -p ~/.config/systemd/user`, then
+`code ~/.config/systemd/user/concertracker.service`) with this content:
+
+```ini
 [Unit]
 Description=Concert Tracker
 
@@ -186,7 +184,6 @@ Restart=on-failure
 
 [Install]
 WantedBy=default.target
-EOF
 ```
 
 ```bash
