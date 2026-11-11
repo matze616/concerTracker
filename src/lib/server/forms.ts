@@ -28,7 +28,8 @@ export function parseConcertForm(
 
 	const bands = (state.bands ?? [])
 		.map((b) => ({ name: String(b.name ?? '').trim(), headliner: !!b.headliner }))
-		.filter((b) => b.name);
+		.filter((b) => b.name)
+		.reverse(); // form order is top of the bill first; storage is running order (first on stage first)
 	if (bands.length === 0) errors.bands = 'Add at least one band.';
 
 	const price = parsePrice(state.price ?? '');

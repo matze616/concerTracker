@@ -209,7 +209,7 @@
 	</div>
 
 	<fieldset>
-		<legend class="label">Bands <span class="font-normal muted">— in running order, first on stage at the top. Enter adds the next band.</span></legend>
+		<legend class="label">Bands <span class="font-normal muted">— like a festival line-up: headliner at the top, opener at the bottom. Enter adds the next band.</span></legend>
 		<datalist id="band-list">
 			{#each options.bands as b (b)}<option value={b}></option>{/each}
 		</datalist>

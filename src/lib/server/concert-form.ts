@@ -43,7 +43,8 @@ export function stateFromConcert(c: ConcertRow): ConcertFormState {
 		venueCity: c.city ?? '',
 		venueCountry: c.country ?? '',
 		event: c.eventName ?? '',
-		bands: c.bands.map((b) => ({ name: b.name, headliner: b.isHeadliner })),
+		// the form lists bands like a festival poster: top of the bill first (reverse running order)
+		bands: c.bands.map((b) => ({ name: b.name, headliner: b.isHeadliner })).reverse(),
 		people: c.people.map((p) => p.name),
 		price: c.ticketPriceCents == null ? '' : (c.ticketPriceCents / 100).toFixed(2).replace(/\.00$/, '').replace('.', ','),
 		currency: c.currency,

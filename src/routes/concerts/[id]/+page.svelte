@@ -40,9 +40,9 @@
 
 <div class="grid gap-4 md:grid-cols-[2fr_1fr]">
 	<section class="card">
-		<h2 class="h2">Running order</h2>
+		<h2 class="h2">Line-up</h2>
 		<ol class="space-y-2">
-			{#each c.bands as b, i (b.id)}
+			{#each [...c.bands].reverse() as b, i (b.id)}
 				<li class="flex items-baseline justify-between gap-3">
 					<span>
 						<span class="mr-2 inline-block w-5 text-right tabular-nums muted">{i + 1}.</span>
